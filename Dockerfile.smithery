@@ -34,14 +34,18 @@ ENV PATH="/app/.venv/bin:${PATH}"
 ENV SERENA_HOME=/app/config
 RUN mkdir -p $SERENA_HOME
 
-# Copy and configure for headless operation
-RUN cp src/serena/resources/serena_config.template.yml $SERENA_HOME/serena_config.yml && \
-    sed -i 's/^gui_log_window: .*/gui_log_window: False/' $SERENA_HOME/serena_config.yml && \
-    sed -i 's/^web_dashboard_open_on_launch: .*/web_dashboard_open_on_launch: False/' $SERENA_HOME/serena_config.yml && \
-    sed -i 's/^web_dashboard: .*/web_dashboard: False/' $SERENA_HOME/serena_config.yml
+# Create a minimal config that disables all GUI/dashboard features
+RUN echo "language_backend: LSP" > $SERENA_HOME/serena_config.yml && \
+    echo "gui_log_window: False" >> $SERENA_HOME/serena_config.yml && \
+    echo "web_dashboard: False" >> $SERENA_HOME/serena_config.yml && \
+    echo "web_dashboard_open_on_launch: False" >> $SERENA_HOME/serena_config.yml && \
+    echo "log_level: 20" >> $SERENA_HOME/serena_config.yml && \
+    echo "tool_timeout: 240" >> $SERENA_HOME/serena_config.yml && \
+    echo "projects: []" >> $SERENA_HOME/serena_config.yml
 
 # Expose the MCP server port (Smithery expects 8081)
 EXPOSE 8081
 
-# Start the MCP server with streamable-http transport on port 8081
-CMD ["serena", "start-mcp-server", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8081"]
+# Start the MCP server with streamable-http transport
+# Using INFO log level for debugging, disable dashboard explicitly
+CMD ["serena", "start-mcp-server", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8081", "--enable-web-dashboard", "False", "--enable-gui-log-window", "False", "--log-level", "INFO"]
