@@ -5,6 +5,7 @@ SHELL ["/bin/bash", "-c"]
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=8081
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,7 +21,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 # Set the working directory
 WORKDIR /app
 
-# Copy all project files (needed for editable install)
+# Copy all project files
 COPY . .
 
 # Create virtual environment and sync dependencies
@@ -39,8 +40,8 @@ RUN cp src/serena/resources/serena_config.template.yml $SERENA_HOME/serena_confi
     sed -i 's/^web_dashboard_open_on_launch: .*/web_dashboard_open_on_launch: False/' $SERENA_HOME/serena_config.yml && \
     sed -i 's/^web_dashboard: .*/web_dashboard: False/' $SERENA_HOME/serena_config.yml
 
-# Expose the MCP server port
-EXPOSE 8000
+# Expose the MCP server port (Smithery expects 8081)
+EXPOSE 8081
 
-# Start the MCP server with SSE transport
-CMD ["serena", "start-mcp-server", "--transport", "sse", "--host", "0.0.0.0", "--port", "8000"]
+# Start the MCP server with SSE transport on port 8081
+CMD ["serena", "start-mcp-server", "--transport", "sse", "--host", "0.0.0.0", "--port", "8081"]
