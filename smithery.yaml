@@ -2,7 +2,7 @@
 # A powerful coding agent toolkit providing semantic retrieval and editing capabilities
 
 startCommand:
-  type: stdio
+  type: http
   configSchema:
     type: object
     properties:
@@ -21,7 +21,12 @@ startCommand:
     required: []
   commandFunction: |
     (config) => {
-      const args = ["uvx", "--from", "git+https://github.com/chrisgreenx-ctrl/serena", "serena", "start-mcp-server"];
+      const args = [
+        "serena", "start-mcp-server",
+        "--transport", "streamable-http",
+        "--host", "0.0.0.0",
+        "--port", "8000"
+      ];
       
       if (config.project) {
         args.push("--project", config.project);
@@ -37,6 +42,7 @@ startCommand:
       
       return { command: args[0], args: args.slice(1) };
     }
+  port: 8000
 
 build:
   dockerfile: Dockerfile
