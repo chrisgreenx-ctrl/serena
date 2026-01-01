@@ -52,5 +52,5 @@ RUN mkdir -p $SERENA_HOME && \
 # Expose the MCP server port
 EXPOSE 8081
 
-# Start the MCP server with SSE transport
-CMD ["serena", "start-mcp-server", "--transport", "sse", "--host", "0.0.0.0", "--port", "8081"]
+# Run the Smithery wrapper script
+CMD ["python", "smithery_server.py"]
