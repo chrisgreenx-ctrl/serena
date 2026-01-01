@@ -20,23 +20,24 @@ ENV PATH="/root/.local/bin:${PATH}"
 # Set the working directory
 WORKDIR /app
 
-# Copy project files
-COPY pyproject.toml uv.lock ./
-COPY src/ ./src/
+# Copy all project files (needed for editable install)
+COPY . .
 
-# Create virtual environment and install dependencies
-RUN uv venv
-RUN uv pip install -r pyproject.toml -e .
+# Create virtual environment and sync dependencies
+RUN uv sync --frozen
+
+# Add venv to PATH
 ENV PATH="/app/.venv/bin:${PATH}"
 
 # Create Serena configuration directory
 ENV SERENA_HOME=/app/config
 RUN mkdir -p $SERENA_HOME
-COPY src/serena/resources/serena_config.template.yml $SERENA_HOME/serena_config.yml
 
-# Configure for headless operation
-RUN sed -i 's/^gui_log_window: .*/gui_log_window: False/' $SERENA_HOME/serena_config.yml || true
-RUN sed -i 's/^web_dashboard_open_on_launch: .*/web_dashboard_open_on_launch: False/' $SERENA_HOME/serena_config.yml || true
+# Copy and configure for headless operation
+RUN cp src/serena/resources/serena_config.template.yml $SERENA_HOME/serena_config.yml && \
+    sed -i 's/^gui_log_window: .*/gui_log_window: False/' $SERENA_HOME/serena_config.yml && \
+    sed -i 's/^web_dashboard_open_on_launch: .*/web_dashboard_open_on_launch: False/' $SERENA_HOME/serena_config.yml && \
+    sed -i 's/^web_dashboard: .*/web_dashboard: False/' $SERENA_HOME/serena_config.yml
 
 # Expose the MCP server port
 EXPOSE 8000
