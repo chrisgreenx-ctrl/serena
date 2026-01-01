@@ -1,0 +1,43 @@
+# Smithery deployment configuration for Serena MCP Server
+# A powerful coding agent toolkit providing semantic retrieval and editing capabilities
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      project:
+        type: string
+        description: "Path or name of project to activate at startup"
+      context:
+        type: string
+        default: "default"
+        description: "Built-in context name or path to custom context YAML"
+      log_level:
+        type: string
+        enum: ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        default: "INFO"
+        description: "Log level for the MCP server"
+    required: []
+  commandFunction: |
+    (config) => {
+      const args = ["uvx", "--from", "git+https://github.com/chrisgreenx-ctrl/serena", "serena", "start-mcp-server"];
+      
+      if (config.project) {
+        args.push("--project", config.project);
+      }
+      
+      if (config.context) {
+        args.push("--context", config.context);
+      }
+      
+      if (config.log_level) {
+        args.push("--log-level", config.log_level);
+      }
+      
+      return { command: args[0], args: args.slice(1) };
+    }
+
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: .
