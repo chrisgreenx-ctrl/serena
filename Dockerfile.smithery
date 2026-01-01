@@ -30,26 +30,24 @@ RUN uv sync --frozen
 # Add venv to PATH
 ENV PATH="/app/.venv/bin:${PATH}"
 
-# Create Serena configuration directory
+# Create Serena configuration directory and config file
 ENV SERENA_HOME=/app/config
-RUN mkdir -p $SERENA_HOME
-
-# Create a minimal headless config
-RUN cat > $SERENA_HOME/serena_config.yml << 'EOF'
-language_backend: LSP
-gui_log_window: False
-web_dashboard: False
-web_dashboard_open_on_launch: False
-web_dashboard_listen_address: 0.0.0.0
-log_level: 20
-trace_lsp_communication: False
-tool_timeout: 240
-excluded_tools: []
-included_optional_tools: []
-default_max_tool_answer_chars: 150000
-token_count_estimator: CHAR_COUNT
-projects: []
-EOF
+RUN mkdir -p $SERENA_HOME && \
+    printf '%s\n' \
+    "language_backend: LSP" \
+    "gui_log_window: False" \
+    "web_dashboard: False" \
+    "web_dashboard_open_on_launch: False" \
+    "web_dashboard_listen_address: 0.0.0.0" \
+    "log_level: 20" \
+    "trace_lsp_communication: False" \
+    "tool_timeout: 240" \
+    "excluded_tools: []" \
+    "included_optional_tools: []" \
+    "default_max_tool_answer_chars: 150000" \
+    "token_count_estimator: CHAR_COUNT" \
+    "projects: []" \
+    > $SERENA_HOME/serena_config.yml
 
 # Expose the MCP server port
 EXPOSE 8081
