@@ -41,5 +41,5 @@ RUN sed -i 's/^web_dashboard_open_on_launch: .*/web_dashboard_open_on_launch: Fa
 # Expose the MCP server port
 EXPOSE 8000
 
-# Start the MCP server with HTTP transport
-CMD ["serena", "start-mcp-server", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000"]
+# Start the MCP server with SSE transport
+CMD ["serena", "start-mcp-server", "--transport", "sse", "--host", "0.0.0.0", "--port", "8000"]
