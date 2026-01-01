@@ -46,6 +46,5 @@ RUN echo "language_backend: LSP" > $SERENA_HOME/serena_config.yml && \
 # Expose the MCP server port (Smithery expects 8081)
 EXPOSE 8081
 
-# Start the MCP server with streamable-http transport
-# Using INFO log level for debugging, disable dashboard explicitly
-CMD ["serena", "start-mcp-server", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8081", "--enable-web-dashboard", "False", "--enable-gui-log-window", "False", "--log-level", "INFO"]
+# Start the MCP server with SSE transport (better compatibility with Smithery sidecar)
+CMD ["serena", "start-mcp-server", "--transport", "sse", "--host", "0.0.0.0", "--port", "8081", "--enable-web-dashboard", "False", "--enable-gui-log-window", "False"]
