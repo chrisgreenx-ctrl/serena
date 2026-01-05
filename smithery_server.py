@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 import uvicorn
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.middleware.cors import CORSMiddleware
 
 from serena.mcp import SerenaMCPFactory
 from serena.config.serena_config import SerenaConfig
@@ -36,38 +37,35 @@ def main():
     
     # Get the Starlette app with streamable HTTP transport
     app = mcp_server.streamable_http_app()
+
+    # Step 2: Revert to Standard CORSMiddleware
+    # We add this first so it wraps the application directly.
+    # Subsequent middlewares (like logging) will wrap this one.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=".*",  # Allows all origins dynamically
+        allow_credentials=True,
+        allow_methods=["*"],      # Allows all methods (GET, POST, PUT, DELETE, OPTIONS, HEAD)
+        allow_headers=["*"],      # Allows all headers
+        expose_headers=["*"],     # Exposes all headers to the browser
+    )
     
-    # Manual CORS Middleware for Reflected Origin Strategy
+    # Step 1: Diagnostics (Crucial)
+    # Add a simple logging middleware at the very top of the stack (before CORS)
+    # By adding it AFTER CORSMiddleware (using @app.middleware), it wraps the existing stack,
+    # so it executes BEFORE CORSMiddleware on the incoming request.
     @app.middleware("http")
-    async def manual_cors_middleware(request: Request, call_next):
-        origin = request.headers.get("origin")
-        print(f"Incoming Origin: {origin}")
+    async def log_request(request: Request, call_next):
+        print("--- Incoming Request Diagnostics ---")
+        print(f"Method: {request.method}")
+        print(f"Path: {request.url.path}")
+        print(f"Origin Header: {request.headers.get('origin', 'N/A')}")
+        print(f"Host Header: {request.headers.get('host', 'N/A')}")
+        print(f"Access-Control-Request-Method: {request.headers.get('access-control-request-method', 'N/A')}")
+        print(f"Access-Control-Request-Headers: {request.headers.get('access-control-request-headers', 'N/A')}")
+        print("------------------------------------")
 
-        # Define common headers
-        allow_origin = origin if origin else "*"
-        allow_credentials = "true"
-        allow_methods = "GET, POST, PUT, DELETE, OPTIONS, HEAD"
-        # Explicitly list allowed headers instead of wildcard
-        allow_headers = "Content-Type, Authorization, mcp-protocol-version, mcp-session-id"
-
-        # Handle Preflight OPTIONS
-        if request.method == "OPTIONS":
-            response = Response(status_code=204)
-            response.headers["Access-Control-Allow-Origin"] = allow_origin
-            response.headers["Access-Control-Allow-Credentials"] = allow_credentials
-            response.headers["Access-Control-Allow-Methods"] = allow_methods
-            response.headers["Access-Control-Allow-Headers"] = allow_headers
-            return response
-
-        # Handle standard requests
         response = await call_next(request)
-
-        # Reflect Origin
-        response.headers["Access-Control-Allow-Origin"] = allow_origin
-        response.headers["Access-Control-Allow-Credentials"] = allow_credentials
-        response.headers["Access-Control-Allow-Methods"] = allow_methods
-        response.headers["Access-Control-Allow-Headers"] = allow_headers
-
         return response
     
     print(f"Listening on port {port}")
