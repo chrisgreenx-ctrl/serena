@@ -39,10 +39,10 @@ def main():
     # Add CORS middleware for browser-based clients
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origin_regex='.*',
         allow_credentials=True,
-        allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "OPTIONS", "HEAD"],
+        allow_headers=["*", "mcp-protocol-version", "mcp-session-id"],
         expose_headers=["mcp-session-id", "mcp-protocol-version"],
         max_age=86400,
     )
