@@ -10,7 +10,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 import uvicorn
-from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 from serena.mcp import SerenaMCPFactory
 from serena.config.serena_config import SerenaConfig
@@ -36,16 +37,38 @@ def main():
     # Get the Starlette app with streamable HTTP transport
     app = mcp_server.streamable_http_app()
     
-    # Add CORS middleware for browser-based clients
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origin_regex='.*',
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "OPTIONS", "HEAD"],
-        allow_headers=["*", "mcp-protocol-version", "mcp-session-id"],
-        expose_headers=["mcp-session-id", "mcp-protocol-version"],
-        max_age=86400,
-    )
+    # Manual CORS Middleware for Reflected Origin Strategy
+    @app.middleware("http")
+    async def manual_cors_middleware(request: Request, call_next):
+        origin = request.headers.get("origin")
+        print(f"Incoming Origin: {origin}")
+
+        # Define common headers
+        allow_origin = origin if origin else "*"
+        allow_credentials = "true"
+        allow_methods = "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+        # Explicitly list allowed headers instead of wildcard
+        allow_headers = "Content-Type, Authorization, mcp-protocol-version, mcp-session-id"
+
+        # Handle Preflight OPTIONS
+        if request.method == "OPTIONS":
+            response = Response(status_code=204)
+            response.headers["Access-Control-Allow-Origin"] = allow_origin
+            response.headers["Access-Control-Allow-Credentials"] = allow_credentials
+            response.headers["Access-Control-Allow-Methods"] = allow_methods
+            response.headers["Access-Control-Allow-Headers"] = allow_headers
+            return response
+
+        # Handle standard requests
+        response = await call_next(request)
+
+        # Reflect Origin
+        response.headers["Access-Control-Allow-Origin"] = allow_origin
+        response.headers["Access-Control-Allow-Credentials"] = allow_credentials
+        response.headers["Access-Control-Allow-Methods"] = allow_methods
+        response.headers["Access-Control-Allow-Headers"] = allow_headers
+
+        return response
     
     print(f"Listening on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
