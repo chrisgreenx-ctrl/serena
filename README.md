@@ -1,3 +1,6 @@
+```markdown
+<a href="https://smithery.ai/server/chris/serena"><img alt="Smithery Badge" src="https://smithery.ai/badge/chris/serena"></a>
+
 <p align="center" style="text-align:center">
   <img src="resources/serena-logo.svg#gh-light-mode-only" style="width:500px">
   <img src="resources/serena-logo-dark-mode.svg#gh-dark-mode-only" style="width:500px">
@@ -102,7 +105,7 @@ See our [documentation page](https://oraios.github.io/serena/02-usage/025_jetbra
 
 ## Quick Start
 
-**Prerequisites**. Serena is managed by *uv*. If you don’t already have it, you need to [install uv](https://docs.astral.sh/uv/getting-started/installation/) before proceeding.
+**Prerequisites**. Serena is managed by *uv*. If you don't already have it, you need to [install uv](https://docs.astral.sh/uv/getting-started/installation/) before proceeding.
 
 **Starting the MCP Server**. The easiest way to start the Serena MCP server is by running the latest version from GitHub using uvx.
 Issue this command to see available options:
@@ -159,7 +162,7 @@ Sponsors help us dedicating more time to the project, managing contributions, an
 LSP features, VSCode integration, debugging via the DAP, and several others).
 If you find this project useful to your work, or would like to accelerate the development of Serena, consider becoming a sponsor.
 
-We are proud to announce that the Visual Studio Code team, together with Microsoft’s Open Source Programs Office and GitHub Open Source
+We are proud to announce that the Visual Studio Code team, together with Microsoft's Open Source Programs Office and GitHub Open Source
 have decided to sponsor Serena with a one-time contribution!
 
 <p align="center">
@@ -197,3 +200,4 @@ It is also relatively straightforward to add [support for a new programming lang
 
 We look forward to seeing what the community will come up with!
 For details on contributing, see [contributing guidelines](/CONTRIBUTING.md).
+```
