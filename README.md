@@ -17,6 +17,7 @@ Instead, it can use code-centric tools like `find_symbol`, `find_referencing_sym
 </p>
 
 <p align="center">
+  <a href="https://smithery.ai/server/chris/serena"><img alt="Smithery Badge" src="https://smithery.ai/badge/chris/serena"></a>
   <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Updates-1e293b?style=flat&logo=rss&logoColor=white&labelColor=1e293b" alt="Changelog" /></a>
   <a href="roadmap.md"><img src="https://img.shields.io/badge/Roadmap-14532d?style=flat&logo=target&logoColor=white&labelColor=14532d" alt="Roadmap" /></a>
   <a href="lessons_learned.md"><img src="https://img.shields.io/badge/Lessons-Learned-7c4700?style=flat&logo=readthedocs&logoColor=white&labelColor=7c4700" alt="Lessons Learned" /></a>
@@ -102,7 +103,7 @@ See our [documentation page](https://oraios.github.io/serena/02-usage/025_jetbra
 
 ## Quick Start
 
-**Prerequisites**. Serena is managed by *uv*. If you don’t already have it, you need to [install uv](https://docs.astral.sh/uv/getting-started/installation/) before proceeding.
+**Prerequisites**. Serena is managed by *uv*. If you don't already have it, you need to [install uv](https://docs.astral.sh/uv/getting-started/installation/) before proceeding.
 
 **Starting the MCP Server**. The easiest way to start the Serena MCP server is by running the latest version from GitHub using uvx.
 Issue this command to see available options:
@@ -159,7 +160,7 @@ Sponsors help us dedicating more time to the project, managing contributions, an
 LSP features, VSCode integration, debugging via the DAP, and several others).
 If you find this project useful to your work, or would like to accelerate the development of Serena, consider becoming a sponsor.
 
-We are proud to announce that the Visual Studio Code team, together with Microsoft’s Open Source Programs Office and GitHub Open Source
+We are proud to announce that the Visual Studio Code team, together with Microsoft's Open Source Programs Office and GitHub Open Source
 have decided to sponsor Serena with a one-time contribution!
 
 <p align="center">
