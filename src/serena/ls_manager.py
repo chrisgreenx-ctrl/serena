@@ -70,8 +70,15 @@ class LanguageServerManager:
         """
         self._language_servers = language_servers
         self._language_server_factory = language_server_factory
-        self._default_language_server = next(iter(language_servers.values()))
-        self._root_path = self._default_language_server.repository_root_path
+        if language_servers:
+            self._default_language_server = next(iter(language_servers.values()))
+            self._root_path = self._default_language_server.repository_root_path
+        elif language_server_factory is not None:
+            # Fallback if no language servers are provided but we have a factory
+            self._default_language_server = None
+            self._root_path = language_server_factory.project_root
+        else:
+            raise ValueError("Cannot initialize LanguageServerManager without language servers or a factory")
 
     @staticmethod
     def from_languages(languages: list[Language], factory: LanguageServerFactory) -> "LanguageServerManager":

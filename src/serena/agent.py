@@ -561,7 +561,19 @@ class SerenaAgent:
         project_instance: Project | None = self.serena_config.get_project(project_root_or_name)
         if project_instance is not None:
             log.info(f"Found registered project '{project_instance.project_name}' at path {project_instance.project_root}")
-        elif autogenerate and os.path.isdir(project_root_or_name):
+        elif autogenerate and (os.path.isdir(project_root_or_name) or not os.path.exists(project_root_or_name)):
+            # If the project does not exist, we try to create it.
+            # This is especially important for remote deployments where the project directory
+            # might not exist on the remote filesystem yet.
+            if not os.path.exists(project_root_or_name):
+                try:
+                    os.makedirs(project_root_or_name, exist_ok=True)
+                    log.info(f"Created directory for new project at {project_root_or_name}")
+                except Exception as e:
+                    # If we cannot create the directory, we cannot add the project
+                    log.warning(f"Could not create directory {project_root_or_name}: {e}")
+                    return None
+
             project_instance = self.serena_config.add_project_from_path(project_root_or_name)
             log.info(f"Added new project {project_instance.project_name} for path {project_instance.project_root}")
         return project_instance

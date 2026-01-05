@@ -4,7 +4,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-from blib2to3.pgen2.parse import contextmanager
+from contextlib import contextmanager
 from sensai.util.logging import configure
 
 from serena.config.serena_config import SerenaPaths
