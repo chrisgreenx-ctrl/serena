@@ -1,0 +1,56 @@
+# Render deployment Dockerfile for Serena MCP Server
+FROM python:3.11-slim
+SHELL ["/bin/bash", "-c"]
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=10000
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Set the working directory
+WORKDIR /app
+
+# Copy all project files
+COPY . .
+
+# Create virtual environment and sync dependencies
+RUN uv sync --frozen
+
+# Add venv to PATH
+ENV PATH="/app/.venv/bin:${PATH}"
+
+# Create Serena configuration directory and config file
+ENV SERENA_HOME=/app/config
+RUN mkdir -p $SERENA_HOME && \
+    printf '%s\n' \
+    "language_backend: LSP" \
+    "gui_log_window: False" \
+    "web_dashboard: False" \
+    "web_dashboard_open_on_launch: False" \
+    "web_dashboard_listen_address: 0.0.0.0" \
+    "log_level: 20" \
+    "trace_lsp_communication: False" \
+    "tool_timeout: 240" \
+    "excluded_tools: []" \
+    "included_optional_tools: []" \
+    "default_max_tool_answer_chars: 150000" \
+    "token_count_estimator: CHAR_COUNT" \
+    "projects: []" \
+    > $SERENA_HOME/serena_config.yml
+
+# Expose the MCP server port
+EXPOSE 10000
+
+# Run the Render entrypoint script
+CMD ["python", "render_entrypoint.py"]
